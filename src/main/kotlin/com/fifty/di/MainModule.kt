@@ -4,6 +4,7 @@ import com.fifty.data.repository.follow.FollowRepository
 import com.fifty.data.repository.follow.FollowRepositoryImpl
 import com.fifty.data.repository.user.UserRepository
 import com.fifty.data.repository.user.UserRepostiroyImpl
+import com.fifty.service.UserService
 import com.fifty.util.Constants
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.coroutine
@@ -20,6 +21,9 @@ val mainModule = module {
     }
     single<FollowRepository> {
         FollowRepositoryImpl(get())
+    }
+    single {
+        UserService(get())
     }
 }
 

@@ -5,6 +5,7 @@ import com.fifty.data.models.User
 import com.fifty.data.requests.CreateAccountRequest
 import com.fifty.data.requests.LoginRequest
 import com.fifty.data.responses.BasicApiResponse
+import com.fifty.service.UserService
 import com.fifty.util.ApiResponseMessages
 import com.fifty.util.ApiResponseMessages.ERROR_INVALID_CREDENTIALS
 import com.fifty.util.ApiResponseMessages.FIELDS_BLANK
@@ -16,7 +17,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.createUserRoute(
-    userRepository: UserRepository
+    userService: UserService
 ) {
     post("/api/user/create") {
         val request =
@@ -24,8 +25,7 @@ fun Route.createUserRoute(
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
-        val userExists = userRepository.getUserByEmail(request.email) != null
-        if (userExists) {
+        if (userService.doesUserWithEmailExists(request.email)) {
             call.respond(
                 BasicApiResponse(
                     successful = false,
@@ -34,30 +34,23 @@ fun Route.createUserRoute(
             )
             return@post
         }
-        if (request.email.isBlank() || request.password.isBlank() || request.username.isBlank()) {
-            call.respond(
-                BasicApiResponse(
-                    successful = false,
-                    message = FIELDS_BLANK
+        when (userService.validateCreateAccountRequest(request)) {
+            is UserService.ValidationEvent.ErrorFieldEmpty -> {
+                call.respond(
+                    BasicApiResponse(
+                        successful = false,
+                        message = FIELDS_BLANK
+                    )
                 )
-            )
-            return@post
+            }
+
+            is UserService.ValidationEvent.SuccessEvent -> {
+                userService.createUser(request)
+                call.respond(
+                    BasicApiResponse(successful = true)
+                )
+            }
         }
-        userRepository.createUser(
-            User(
-                email = request.email,
-                username = request.username,
-                password = request.password,
-                profileImageUrl = "",
-                bio = "",
-                gitHubUrl = null,
-                instagramUrl = null,
-                linkedInUrl = null
-            )
-        )
-        call.respond(
-            BasicApiResponse(successful = true)
-        )
     }
 }
 

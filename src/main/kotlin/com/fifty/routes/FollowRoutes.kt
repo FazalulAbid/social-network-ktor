@@ -1,8 +1,8 @@
 package com.fifty.routes
 
-import com.fifty.data.repository.follow.FollowRepository
 import com.fifty.data.requests.FollowUpdateRequest
 import com.fifty.data.responses.BasicApiResponse
+import com.fifty.service.FollowService
 import com.fifty.util.ApiResponseMessages.USER_NOT_FOUND
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -10,7 +10,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Route.followUser(followRepository: FollowRepository) {
+fun Route.followUser(followService: FollowService) {
     post("/api/following/follow") {
         val request =
             kotlin.runCatching { call.receiveNullable<FollowUpdateRequest>() }.getOrNull() ?: kotlin.run {
@@ -18,11 +18,7 @@ fun Route.followUser(followRepository: FollowRepository) {
                 return@post
             }
 
-        val didUserExist = followRepository.followUserIfExists(
-            followingUserId = request.followingUserId,
-            followedUserId = request.followedUserId
-        )
-        if (didUserExist) {
+        if (followService.followUserIfExists(request)) {
             call.respond(
                 HttpStatusCode.OK,
                 BasicApiResponse(
@@ -41,7 +37,7 @@ fun Route.followUser(followRepository: FollowRepository) {
     }
 }
 
-fun Route.unfollowUser(followRepository: FollowRepository) {
+fun Route.unfollowUser(followService: FollowService) {
     delete("/api/following/unfollow") {
         val request =
             kotlin.runCatching { call.receiveNullable<FollowUpdateRequest>() }.getOrNull() ?: kotlin.run {
@@ -49,11 +45,7 @@ fun Route.unfollowUser(followRepository: FollowRepository) {
                 return@delete
             }
 
-        val didUserExist = followRepository.unfollowUserIfExists(
-            followingUserId = request.followingUserId,
-            followedUserId = request.followedUserId
-        )
-        if (didUserExist) {
+        if (followService.unfollowUserIfExists(request)) {
             call.respond(
                 HttpStatusCode.OK,
                 BasicApiResponse(
@@ -68,7 +60,6 @@ fun Route.unfollowUser(followRepository: FollowRepository) {
                     message = USER_NOT_FOUND
                 )
             )
-
         }
     }
 }
