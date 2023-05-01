@@ -61,7 +61,7 @@ fun Route.getPostsForFollows(
     userService: UserService
 ) {
     authenticate {
-        get {
+        get("/api/post/get") {
             val userId = call.parameters[QueryParams.PARAM_USER_ID] ?: kotlin.run {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
@@ -69,11 +69,6 @@ fun Route.getPostsForFollows(
             val page = call.parameters[QueryParams.PARAM_PAGE]?.toIntOrNull() ?: 0
             val pageSize =
                 call.parameters[QueryParams.PARAM_PAGE_SIZE]?.toIntOrNull() ?: Constants.DEFAULT_POST_PAGE_SIZE
-
-            val isEmailByUser = userService.doesEmailBelongToUserId(
-                email = call.principal<JWTPrincipal>()?.email ?: "",
-                userId = userId
-            )
 
             ifEmailBelongsToUser(
                 userId = userId,

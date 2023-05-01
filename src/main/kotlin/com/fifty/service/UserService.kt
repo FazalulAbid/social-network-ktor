@@ -4,10 +4,6 @@ import com.fifty.data.models.User
 import com.fifty.data.repository.user.UserRepository
 import com.fifty.data.requests.CreateAccountRequest
 import com.fifty.data.requests.LoginRequest
-import com.fifty.data.responses.BasicApiResponse
-import com.fifty.util.ApiResponseMessages
-import io.ktor.server.application.*
-import io.ktor.server.response.*
 
 class UserService(
     private val repository: UserRepository
