@@ -2,14 +2,11 @@ package com.fifty.routes
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.fifty.data.repository.user.UserRepository
-import com.fifty.data.models.User
 import com.fifty.data.requests.CreateAccountRequest
 import com.fifty.data.requests.LoginRequest
 import com.fifty.data.responses.AuthResponse
 import com.fifty.data.responses.BasicApiResponse
 import com.fifty.service.UserService
-import com.fifty.util.ApiResponseMessages
 import com.fifty.util.ApiResponseMessages.ERROR_INVALID_CREDENTIALS
 import com.fifty.util.ApiResponseMessages.FIELDS_BLANK
 import com.fifty.util.ApiResponseMessages.USER_ALREADY_EXISTS
@@ -20,7 +17,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.util.*
 
-fun Route.createUserRoute(
+fun Route.createUser(
     userService: UserService
 ) {
     post("/api/user/create") {

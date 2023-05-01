@@ -1,10 +1,10 @@
 package com.fifty.routes
 
-import com.fifty.data.models.Post
-import com.fifty.data.repository.post.PostRepository
 import com.fifty.data.requests.CreatePostRequest
+import com.fifty.data.requests.DeletePostRequest
 import com.fifty.data.responses.BasicApiResponse
 import com.fifty.plugins.email
+import com.fifty.service.LikeService
 import com.fifty.service.PostService
 import com.fifty.service.UserService
 import com.fifty.util.ApiResponseMessages
@@ -18,7 +18,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Route.createPostRoute(
+fun Route.createPost(
     postService: PostService,
     userService: UserService
 ) {
@@ -87,6 +87,36 @@ fun Route.getPostsForFollows(
                     posts
                 )
             }
+        }
+    }
+}
+
+fun Route.deletePost(
+    postService: PostService,
+    userService: UserService,
+    likeService: LikeService
+) {
+    delete("/api/post/delete") {
+        val request =
+            kotlin.runCatching { call.receiveNullable<DeletePostRequest>() }.getOrNull() ?: kotlin.run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@delete
+            }
+
+        val post = postService.getPost(request.postId)
+        if (post == null) {
+            call.respond(HttpStatusCode.NotFound)
+            return@delete
+        }
+
+        ifEmailBelongsToUser(
+            userId = post.userId,
+            validateEmail = userService::doesEmailBelongToUserId
+        ) {
+            postService.deletePost(postId = request.postId)
+            likeService.deleteLikesForParent(request.postId)
+            // TODO: Delete comments from post
+            call.respond(HttpStatusCode.OK)
         }
     }
 }
