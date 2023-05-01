@@ -1,7 +1,9 @@
 package com.fifty
 
-import io.ktor.server.application.*
+import com.fifty.di.mainModule
 import com.fifty.plugins.*
+import io.ktor.server.application.*
+import org.koin.ktor.plugin.Koin
 
 fun main(args: Array<String>): Unit =
     io.ktor.server.netty.EngineMain.main(args)
@@ -13,4 +15,7 @@ fun Application.module() {
     configureHTTP()
     configureSecurity()
     configureRouting()
+    install(Koin) {
+        this.modules(mainModule)
+    }
 }
