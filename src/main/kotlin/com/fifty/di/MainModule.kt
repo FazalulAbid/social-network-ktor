@@ -1,7 +1,7 @@
 package com.fifty.di
 
-import com.fifty.repository.user.UserRepository
-import com.fifty.repository.user.UserRepostiroyImpl
+import com.fifty.data.repository.user.UserRepository
+import com.fifty.data.repository.user.UserRepostiroyImpl
 import com.fifty.util.Constants
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.coroutine

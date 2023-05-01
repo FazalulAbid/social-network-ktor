@@ -10,12 +10,12 @@ fun main(args: Array<String>): Unit =
 
 @Suppress("unused")
 fun Application.module() {
+    install(Koin) {
+        this.modules(mainModule)
+    }
     configureSerialization()
     configureMonitoring()
     configureHTTP()
     configureSecurity()
     configureRouting()
-    install(Koin) {
-        this.modules(mainModule)
-    }
 }
