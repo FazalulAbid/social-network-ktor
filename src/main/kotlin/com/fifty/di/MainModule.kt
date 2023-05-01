@@ -2,8 +2,12 @@ package com.fifty.di
 
 import com.fifty.data.repository.follow.FollowRepository
 import com.fifty.data.repository.follow.FollowRepositoryImpl
+import com.fifty.data.repository.post.PostRepository
+import com.fifty.data.repository.post.PostRepositoryImpl
 import com.fifty.data.repository.user.UserRepository
 import com.fifty.data.repository.user.UserRepostiroyImpl
+import com.fifty.service.FollowService
+import com.fifty.service.PostService
 import com.fifty.service.UserService
 import com.fifty.util.Constants
 import org.koin.dsl.module
@@ -22,8 +26,11 @@ val mainModule = module {
     single<FollowRepository> {
         FollowRepositoryImpl(get())
     }
-    single {
-        UserService(get())
+    single<PostRepository> {
+        PostRepositoryImpl(get())
     }
+    single { UserService(get()) }
+    single { FollowService(get()) }
+    single { PostService(get()) }
 }
 

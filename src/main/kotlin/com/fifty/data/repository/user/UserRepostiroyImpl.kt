@@ -2,6 +2,7 @@ package com.fifty.data.repository.user
 
 import com.fifty.data.models.User
 import io.ktor.server.routing.*
+import org.koin.core.time.measureDuration
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq
 
@@ -28,5 +29,9 @@ class UserRepostiroyImpl(
     ): Boolean {
         val user = getUserByEmail(email)
         return user?.password == enteredPassword
+    }
+
+    override suspend fun doesEmailBelongToUserId(email: String, userId: String): Boolean {
+        return users.findOneById(userId)?.email == email
     }
 }
