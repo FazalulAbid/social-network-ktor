@@ -1,5 +1,7 @@
 package com.fifty.di
 
+import com.fifty.data.repository.follow.FollowRepository
+import com.fifty.data.repository.follow.FollowRepositoryImpl
 import com.fifty.data.repository.user.UserRepository
 import com.fifty.data.repository.user.UserRepostiroyImpl
 import com.fifty.util.Constants
@@ -15,6 +17,9 @@ val mainModule = module {
     }
     single<UserRepository> {
         UserRepostiroyImpl(get())
+    }
+    single<FollowRepository> {
+        FollowRepositoryImpl(get())
     }
 }
 
