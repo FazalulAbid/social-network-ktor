@@ -1,7 +1,7 @@
 package com.fifty.di
 
-import com.fifty.controller.user.UserController
-import com.fifty.controller.user.UserControllerImpl
+import com.fifty.repository.user.UserRepository
+import com.fifty.repository.user.UserRepostiroyImpl
 import com.fifty.util.Constants
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.coroutine
@@ -13,7 +13,8 @@ val mainModule = module {
         val client = KMongo.createClient().coroutine
         client.getDatabase(Constants.DATABASE_NAME)
     }
-    single<UserController> {
-        UserControllerImpl(get())
+    single<UserRepository> {
+        UserRepostiroyImpl(get())
     }
 }
+

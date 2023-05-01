@@ -1,12 +1,12 @@
-package com.fifty.controller.user
+package com.fifty.repository.user
 
 import com.fifty.data.models.User
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq
 
-class UserControllerImpl(
+class UserRepostiroyImpl(
     db: CoroutineDatabase
-) : UserController {
+) : UserRepository {
 
     private val users = db.getCollection<User>()
 

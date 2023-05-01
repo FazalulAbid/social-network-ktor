@@ -1,6 +1,6 @@
 package com.fifty.routes
 
-import com.fifty.controller.user.UserController
+import com.fifty.repository.user.UserRepository
 import com.fifty.data.models.User
 import com.fifty.data.requests.CreateAccountRequest
 import com.fifty.data.responses.BasicApiResponse
@@ -11,10 +11,10 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.koin.ktor.ext.inject
 
-fun Route.userRoutes() {
-    val userController: UserController by inject()
+fun Route.createUserRoute(
+    userRepository: UserRepository
+) {
     route("/api/user/create") {
         post {
             val request =
@@ -22,7 +22,7 @@ fun Route.userRoutes() {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }
-            val userExists = userController.getUserByEmail(request.email) != null
+            val userExists = userRepository.getUserByEmail(request.email) != null
             if (userExists) {
                 call.respond(
                     BasicApiResponse(
@@ -41,7 +41,7 @@ fun Route.userRoutes() {
                 )
                 return@post
             }
-            userController.createUser(
+            userRepository.createUser(
                 User(
                     email = request.email,
                     username = request.username,

@@ -1,8 +1,8 @@
-package com.fifty.controller.user
+package com.fifty.repository.user
 
 import com.fifty.data.models.User
 
-interface UserController {
+interface UserRepository {
 
     suspend fun createUser(user: User)
 
