@@ -7,7 +7,7 @@ import com.fifty.data.requests.LoginRequest
 import com.fifty.data.responses.AuthResponse
 import com.fifty.data.responses.BasicApiResponse
 import com.fifty.service.UserService
-import com.fifty.util.ApiResponseMessages.ERROR_INVALID_CREDENTIALS
+import com.fifty.util.ApiResponseMessages.INVALID_CREDENTIALS
 import com.fifty.util.ApiResponseMessages.FIELDS_BLANK
 import com.fifty.util.ApiResponseMessages.USER_ALREADY_EXISTS
 import io.ktor.http.*
@@ -73,11 +73,24 @@ fun Route.loginUser(
             return@post
         }
 
-        val isCorrectPassword = userService.doesPasswordMatchForUser(request)
+        val user = userService.getUserByEmail(request.email) ?: kotlin.run {
+            call.respond(
+                HttpStatusCode.OK,
+                BasicApiResponse(
+                    successful = false,
+                    message = INVALID_CREDENTIALS
+                )
+            )
+            return@post
+        }
+        val isCorrectPassword = userService.isValidPassword(
+            enteredPassword = request.password,
+            actualPassword = user.password
+        )
         if (isCorrectPassword) {
             val expiresIn = 1000L * 60L * 60L * 24L * 365L
             val token = JWT.create()
-                .withClaim("email", request.email)
+                .withClaim("userId", user.id)
                 .withIssuer(jwtIssuer)
                 .withExpiresAt(Date(System.currentTimeMillis() + expiresIn))
                 .withAudience(jwtAudience)
@@ -91,7 +104,7 @@ fun Route.loginUser(
                 HttpStatusCode.OK,
                 BasicApiResponse(
                     successful = false,
-                    message = ERROR_INVALID_CREDENTIALS
+                    message = INVALID_CREDENTIALS
                 )
             )
         }
