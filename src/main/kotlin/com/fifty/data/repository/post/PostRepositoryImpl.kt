@@ -47,18 +47,6 @@ class PostRepositoryImpl(
             .toList()
     }
 
-    override suspend fun getPostsForProfile(
-        userId: String,
-        page: Int,
-        pageSize: Int
-    ): List<Post> {
-        return posts.find(Post::userId `in` userId)
-            .skip(page * pageSize)
-            .limit(pageSize)
-            .descendingSort(Post::timestamp)
-            .toList()
-    }
-
     override suspend fun getPost(postId: String): Post? {
         return posts.findOneById(postId)
     }
