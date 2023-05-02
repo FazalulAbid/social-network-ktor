@@ -5,7 +5,11 @@ import com.fifty.data.repository.follow.FollowRepository
 import com.fifty.data.repository.user.UserRepository
 import com.fifty.data.requests.CreateAccountRequest
 import com.fifty.data.requests.LoginRequest
+import com.fifty.data.requests.UpdateProfileRequest
+import com.fifty.data.responses.ProfileResponse
 import com.fifty.data.responses.UserResponseItem
+import com.mongodb.MongoSocketReadTimeoutException
+import org.litote.kreflect.findProperty
 
 class UserService(
     private val userRepository: UserRepository,
@@ -16,8 +20,24 @@ class UserService(
         return userRepository.getUserByEmail(email) != null
     }
 
-    suspend fun doesEmailBelongToUserId(email: String, userId: String): Boolean {
-        return userRepository.doesEmailBelongToUserId(email, userId)
+    suspend fun getUserProfile(userId: String, callerUserId: String): ProfileResponse? {
+        val user = userRepository.getUserById(userId) ?: return null
+        return ProfileResponse(
+            username = user.username,
+            bio = user.bio,
+            followerCount = user.followerCount,
+            followingCount = user.followingCount,
+            postCount = user.postCount,
+            profilePictureUrl = user.profileImageUrl,
+            topSkillsUrls = user.skills,
+            gitHubUrl = user.gitHubUrl,
+            instagramUrl = user.instagramUrl,
+            linkedInUrl = user.linkedInUrl,
+            isOwnProfile = userId == callerUserId,
+            isFollowing = if (userId != callerUserId) {
+                followRepository.doesUserFollow(followingUserId = callerUserId, followedUserId = userId)
+            } else false
+        )
     }
 
     suspend fun getUserByEmail(email: String): User? {
@@ -26,6 +46,14 @@ class UserService(
 
     fun isValidPassword(enteredPassword: String, actualPassword: String): Boolean {
         return enteredPassword == actualPassword
+    }
+
+    suspend fun updateUser(
+        userId: String,
+        profileImageUrl: String,
+        updateProfileRequest: UpdateProfileRequest
+    ): Boolean {
+        return userRepository.updateUser(userId, profileImageUrl, updateProfileRequest)
     }
 
     suspend fun searchForUsers(query: String, userId: String): List<UserResponseItem> {
