@@ -1,7 +1,10 @@
 package com.fifty.routes
 
+import com.fifty.data.models.Activity
 import com.fifty.data.requests.FollowUpdateRequest
 import com.fifty.data.responses.BasicApiResponse
+import com.fifty.data.util.ActivityType
+import com.fifty.service.ActivityService
 import com.fifty.service.FollowService
 import com.fifty.util.ApiResponseMessages.USER_NOT_FOUND
 import io.ktor.http.*
@@ -11,7 +14,10 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Route.followUser(followService: FollowService) {
+fun Route.followUser(
+    followService: FollowService,
+    activityService: ActivityService
+) {
     authenticate {
         post("/api/following/follow") {
             val request =
@@ -21,6 +27,15 @@ fun Route.followUser(followService: FollowService) {
                 }
 
             if (followService.followUserIfExists(request, call.userId)) {
+                activityService.createActivity(
+                    Activity(
+                        timestamp = System.currentTimeMillis(),
+                        byUserId = call.userId,
+                        toUserId = request.followedUserId,
+                        type = ActivityType.FollowedUser.type,
+                        parentId = ""
+                    )
+                )
                 call.respond(
                     HttpStatusCode.OK,
                     BasicApiResponse(

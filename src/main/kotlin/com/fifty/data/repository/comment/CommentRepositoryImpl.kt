@@ -10,8 +10,9 @@ class CommentRepositoryImpl(
 
     private val comments = db.getCollection<Comment>()
 
-    override suspend fun createComment(comment: com.fifty.data.models.Comment) {
+    override suspend fun createComment(comment: Comment): String {
         comments.insertOne(comment)
+        return comment.id
     }
 
     override suspend fun deleteComment(commentId: String): Boolean {
@@ -19,11 +20,17 @@ class CommentRepositoryImpl(
         return deleteCount > 0
     }
 
+    override suspend fun deleteCommentsFromPost(postId: String): Boolean {
+        return comments.deleteMany(
+            Comment::postId eq postId
+        ).wasAcknowledged()
+    }
+
     override suspend fun getCommentsForPost(postId: String): List<Comment> {
         return comments.find(Comment::postId eq postId).toList()
     }
 
-    override suspend fun getComment(commentId: String): com.fifty.data.models.Comment? {
+    override suspend fun getComment(commentId: String): Comment? {
         return comments.findOneById(commentId)
     }
 }

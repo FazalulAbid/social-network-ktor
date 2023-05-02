@@ -3,6 +3,7 @@ package com.fifty.routes
 import com.fifty.data.requests.CreateCommentRequest
 import com.fifty.data.requests.DeleteCommentRequest
 import com.fifty.data.responses.BasicApiResponse
+import com.fifty.service.ActivityService
 import com.fifty.service.CommentService
 import com.fifty.service.LikeService
 import com.fifty.service.UserService
@@ -17,6 +18,7 @@ import io.ktor.server.routing.*
 
 fun Route.createComment(
     commentService: CommentService,
+    activityService: ActivityService
 ) {
     authenticate {
         post("/api/comment/create") {
@@ -24,8 +26,9 @@ fun Route.createComment(
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
-            when (commentService.createComment(request, call.userId)) {
-                CommentService.ValidationEvent.ErrorCommentTooLong -> {
+            val userId = call.userId
+            when (commentService.createComment(request, userId)) {
+                is CommentService.ValidationEvent.ErrorCommentTooLong -> {
                     call.respond(
                         HttpStatusCode.OK,
                         BasicApiResponse(
@@ -35,7 +38,7 @@ fun Route.createComment(
                     )
                 }
 
-                CommentService.ValidationEvent.ErrorFieldEmpty -> {
+                is CommentService.ValidationEvent.ErrorFieldEmpty -> {
                     call.respond(
                         HttpStatusCode.OK,
                         BasicApiResponse(
@@ -45,7 +48,11 @@ fun Route.createComment(
                     )
                 }
 
-                CommentService.ValidationEvent.Success -> {
+                is CommentService.ValidationEvent.Success -> {
+                    activityService.addCommentActivity(
+                        byUserId = userId,
+                        postId = request.postId,
+                    )
                     call.respond(
                         HttpStatusCode.OK,
                         BasicApiResponse(

@@ -3,6 +3,7 @@ package com.fifty.routes
 import com.fifty.data.requests.CreatePostRequest
 import com.fifty.data.requests.DeletePostRequest
 import com.fifty.data.responses.BasicApiResponse
+import com.fifty.service.CommentService
 import com.fifty.service.LikeService
 import com.fifty.service.PostService
 import com.fifty.service.UserService
@@ -71,7 +72,8 @@ fun Route.getPostsForFollows(
 
 fun Route.deletePost(
     postService: PostService,
-    likeService: LikeService
+    likeService: LikeService,
+    commentService: CommentService
 ) {
     authenticate {
         delete("/api/post/delete") {
@@ -89,7 +91,7 @@ fun Route.deletePost(
             if (post.userId == call.userId) {
                 postService.deletePost(postId = request.postId)
                 likeService.deleteLikesForParent(request.postId)
-                // TODO: Delete comments from post
+                commentService.deleteCommentsForPost(request.postId)
                 call.respond(HttpStatusCode.OK)
             } else {
                 call.respond(HttpStatusCode.Unauthorized)

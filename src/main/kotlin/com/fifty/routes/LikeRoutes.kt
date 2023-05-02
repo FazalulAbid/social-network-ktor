@@ -2,6 +2,8 @@ package com.fifty.routes
 
 import com.fifty.data.requests.LikeUpdateRequest
 import com.fifty.data.responses.BasicApiResponse
+import com.fifty.data.util.ParentType
+import com.fifty.service.ActivityService
 import com.fifty.service.LikeService
 import com.fifty.service.UserService
 import com.fifty.util.ApiResponseMessages
@@ -14,7 +16,7 @@ import io.ktor.server.routing.*
 
 fun Route.likeParent(
     likeService: LikeService,
-    userService: UserService
+    activityService: ActivityService
 ) {
     authenticate {
         post("/api/like") {
@@ -24,8 +26,15 @@ fun Route.likeParent(
                 )
                 return@post
             }
-            val likeSuccessful = likeService.likeParent(call.userId, request.parentId)
+
+            val userId = call.userId
+            val likeSuccessful = likeService.likeParent(call.userId, request.parentId, request.parentType)
             if (likeSuccessful) {
+                activityService.addLikeActivity(
+                    byUserId = userId,
+                    parentType = ParentType.fromType(request.parentType),
+                    parentId = request.parentId
+                )
                 call.respond(
                     HttpStatusCode.OK,
                     BasicApiResponse(

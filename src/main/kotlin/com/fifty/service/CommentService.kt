@@ -43,6 +43,10 @@ class CommentService(
         return repository.getComment(commentId)
     }
 
+    suspend fun deleteCommentsForPost(postId: String) {
+        repository.deleteComment(postId)
+    }
+
     sealed class ValidationEvent {
         object ErrorFieldEmpty : ValidationEvent()
         object ErrorCommentTooLong : ValidationEvent()

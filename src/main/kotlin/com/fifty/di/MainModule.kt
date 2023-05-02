@@ -1,5 +1,7 @@
 package com.fifty.di
 
+import com.fifty.data.repository.activity.ActivityRepository
+import com.fifty.data.repository.activity.ActivityRepositoryImpl
 import com.fifty.data.repository.comment.CommentRepository
 import com.fifty.data.repository.comment.CommentRepositoryImpl
 import com.fifty.data.repository.follow.FollowRepository
@@ -37,10 +39,14 @@ val mainModule = module {
     single<CommentRepository> {
         CommentRepositoryImpl(get())
     }
+    single<ActivityRepository> {
+        ActivityRepositoryImpl(get())
+    }
     single { UserService(get()) }
     single { FollowService(get()) }
     single { PostService(get()) }
     single { LikeService(get()) }
     single { CommentService(get()) }
+    single { ActivityService(get(), get(), get()) }
 }
 
