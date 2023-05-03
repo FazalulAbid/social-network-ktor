@@ -18,6 +18,7 @@ import com.fifty.util.Constants
 import com.fifty.util.Constants.BASE_URL
 import com.fifty.util.Constants.PROFILE_PICTURE_PATH
 import com.fifty.util.QueryParams
+import com.fifty.util.save
 import com.google.gson.Gson
 import io.ktor.http.*
 import io.ktor.http.ContentDisposition.Companion.File
@@ -210,10 +211,7 @@ fun Route.updateUserProfile(userService: UserService) {
                     }
 
                     is PartData.FileItem -> {
-                        val fileBytes = partData.streamProvider().readBytes()
-                        val fileExtension = partData.originalFileName?.takeLastWhile { it != '.' }
-                        fileName = UUID.randomUUID().toString() + ".$fileExtension"
-                        File("$PROFILE_PICTURE_PATH$fileName").writeBytes(fileBytes)
+                        fileName = partData.save(Constants.PROFILE_PICTURE_PATH)
                     }
 
                     is PartData.BinaryItem -> Unit
@@ -225,7 +223,7 @@ fun Route.updateUserProfile(userService: UserService) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@put
             }
-            val profilePictureUrl = "${BASE_URL}$PROFILE_PICTURE_PATH$fileName"
+            val profilePictureUrl = "${BASE_URL}profile_pictures/$fileName"
 
             updateProfileRequest?.let { request ->
                 val updateAcknowledged = userService.updateUser(
