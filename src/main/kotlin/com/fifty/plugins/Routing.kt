@@ -3,6 +3,7 @@ package com.fifty.plugins
 import com.fifty.routes.*
 import com.fifty.service.*
 import io.ktor.server.application.*
+import io.ktor.server.http.content.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
@@ -28,6 +29,9 @@ fun Application.configureRouting() {
             jwtSecret = jwtSecret
         )
         searchUser(userService)
+        getUserProfile(userService)
+        getPostsForProfile(postService)
+        updateUserProfile(userService)
 
         // Following routes
         followUser(followService, activityService)
@@ -49,5 +53,9 @@ fun Application.configureRouting() {
 
         // Activity routes
         getActivities(activityService)
+
+        static {
+            resource("static")
+        }
     }
 }

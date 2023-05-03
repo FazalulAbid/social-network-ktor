@@ -11,9 +11,10 @@ import com.fifty.data.repository.likes.LikeRepositoryImpl
 import com.fifty.data.repository.post.PostRepository
 import com.fifty.data.repository.post.PostRepositoryImpl
 import com.fifty.data.repository.user.UserRepository
-import com.fifty.data.repository.user.UserRepostiroyImpl
+import com.fifty.data.repository.user.UserRepositoryImpl
 import com.fifty.service.*
 import com.fifty.util.Constants
+import com.google.gson.Gson
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
@@ -25,7 +26,7 @@ val mainModule = module {
         client.getDatabase(Constants.DATABASE_NAME)
     }
     single<UserRepository> {
-        UserRepostiroyImpl(get())
+        UserRepositoryImpl(get())
     }
     single<FollowRepository> {
         FollowRepositoryImpl(get())
@@ -48,5 +49,7 @@ val mainModule = module {
     single { LikeService(get()) }
     single { CommentService(get()) }
     single { ActivityService(get(), get(), get()) }
+
+    single { Gson() }
 }
 
