@@ -211,7 +211,7 @@ fun Route.updateUserProfile(userService: UserService) {
                     }
 
                     is PartData.FileItem -> {
-                        fileName = partData.save(Constants.PROFILE_PICTURE_PATH)
+                        fileName = partData.save(PROFILE_PICTURE_PATH)
                     }
 
                     is PartData.BinaryItem -> Unit

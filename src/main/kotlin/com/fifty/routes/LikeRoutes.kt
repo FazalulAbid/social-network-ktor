@@ -7,6 +7,7 @@ import com.fifty.service.ActivityService
 import com.fifty.service.LikeService
 import com.fifty.service.UserService
 import com.fifty.util.ApiResponseMessages
+import com.fifty.util.QueryParams
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -83,6 +84,25 @@ fun Route.unlikeParent(
                     )
                 )
             }
+        }
+    }
+}
+
+fun Route.getLikesForParent(likeService: LikeService) {
+    authenticate {
+        get("/api/like/parent") {
+            val parentId = call.parameters[QueryParams.PARAM_PARENT_ID] ?: kotlin.run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@get
+            }
+            val usersWhoLikedParent = likeService.getUsersWhoLikedForParent(
+                parentId = parentId,
+                userId = call.userId
+            )
+            call.respond(
+                HttpStatusCode.OK,
+                usersWhoLikedParent
+            )
         }
     }
 }
