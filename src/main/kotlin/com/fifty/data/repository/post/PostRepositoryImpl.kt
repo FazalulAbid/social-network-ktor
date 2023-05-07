@@ -28,6 +28,13 @@ class PostRepositoryImpl(
         page: Int,
         pageSize: Int
     ): List<Post> {
+//        val userIdsFromFollows = users.find(
+//            User::id eq userId
+//        )
+//            .toList()
+//            .map {
+//                it.id
+//            }
         val userIdsFromFollows = following.find(
             Following::followedUserId eq userId
         )

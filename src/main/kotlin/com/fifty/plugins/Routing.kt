@@ -4,6 +4,7 @@ import com.fifty.routes.*
 import com.fifty.service.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
@@ -20,7 +21,11 @@ fun Application.configureRouting() {
     val jwtSecret = environment.config.property("jwt.secret").getString()
 
     routing {
+        get("/") {
+            call.respondText("Hello, world!")
+        }
         // User routes
+        authenticate()
         createUser(userService)
         loginUser(
             userService = userService,
@@ -46,11 +51,11 @@ fun Application.configureRouting() {
         likeParent(likeService, activityService)
         unlikeParent(likeService, userService)
         getLikesForParent(likeService)
-
+ 
         //Comment routes
         createComment(commentService, activityService)
         deleteComment(commentService, likeService)
-        getCommentsForPost(commentService)
+        getCommentsForPost(commentService) 
 
         // Activity routes
         getActivities(activityService)
