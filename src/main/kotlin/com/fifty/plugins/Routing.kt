@@ -1,5 +1,6 @@
 package com.fifty.plugins
 
+import com.fifty.data.models.Skill
 import com.fifty.routes.*
 import com.fifty.service.*
 import io.ktor.server.application.*
@@ -7,6 +8,7 @@ import io.ktor.server.http.content.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
+import java.io.File
 
 fun Application.configureRouting() {
     val userService: UserService by inject()
@@ -15,6 +17,7 @@ fun Application.configureRouting() {
     val likeService: LikeService by inject()
     val commentService: CommentService by inject()
     val activityService: ActivityService by inject()
+    val skillService: SkillService by inject()
 
     val jwtIssuer = environment.config.property("jwt.domain").getString()
     val jwtAudience = environment.config.property("jwt.audience").getString()
@@ -51,17 +54,20 @@ fun Application.configureRouting() {
         likeParent(likeService, activityService)
         unlikeParent(likeService, userService)
         getLikesForParent(likeService)
- 
+
         //Comment routes
         createComment(commentService, activityService)
         deleteComment(commentService, likeService)
-        getCommentsForPost(commentService) 
+        getCommentsForPost(commentService)
 
         // Activity routes
         getActivities(activityService)
 
+        // Skill routes
+        getSkills(skillService = skillService)
+
         static {
-            resource("static")
+            resources("static")
         }
     }
 }

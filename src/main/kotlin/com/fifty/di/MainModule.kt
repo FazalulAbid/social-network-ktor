@@ -10,6 +10,8 @@ import com.fifty.data.repository.likes.LikeRepository
 import com.fifty.data.repository.likes.LikeRepositoryImpl
 import com.fifty.data.repository.post.PostRepository
 import com.fifty.data.repository.post.PostRepositoryImpl
+import com.fifty.data.repository.skill.SkillRepository
+import com.fifty.data.repository.skill.SkillRepositoryImpl
 import com.fifty.data.repository.user.UserRepository
 import com.fifty.data.repository.user.UserRepositoryImpl
 import com.fifty.service.*
@@ -43,12 +45,16 @@ val mainModule = module {
     single<ActivityRepository> {
         ActivityRepositoryImpl(get())
     }
+    single<SkillRepository> {
+        SkillRepositoryImpl(get())
+    }
     single { UserService(get(), get()) }
     single { FollowService(get()) }
     single { PostService(get()) }
     single { LikeService(get(), get(), get()) }
     single { CommentService(get()) }
     single { ActivityService(get(), get(), get()) }
+    single { SkillService(get()) }
 
     single { Gson() }
 }

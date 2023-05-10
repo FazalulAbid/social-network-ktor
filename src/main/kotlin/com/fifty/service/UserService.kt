@@ -8,8 +8,6 @@ import com.fifty.data.requests.LoginRequest
 import com.fifty.data.requests.UpdateProfileRequest
 import com.fifty.data.responses.ProfileResponse
 import com.fifty.data.responses.UserResponseItem
-import com.mongodb.MongoSocketReadTimeoutException
-import org.litote.kreflect.findProperty
 
 class UserService(
     private val userRepository: UserRepository,
@@ -23,13 +21,15 @@ class UserService(
     suspend fun getUserProfile(userId: String, callerUserId: String): ProfileResponse? {
         val user = userRepository.getUserById(userId) ?: return null
         return ProfileResponse(
+            userId = user.id,
             username = user.username,
             bio = user.bio,
             followerCount = user.followerCount,
             followingCount = user.followingCount,
             postCount = user.postCount,
             profilePictureUrl = user.profileImageUrl,
-            topSkillsUrls = user.skills,
+            bannerUrl = user.bannerUrl,
+            topSkills = user.skills,
             gitHubUrl = user.gitHubUrl,
             instagramUrl = user.instagramUrl,
             linkedInUrl = user.linkedInUrl,
@@ -50,10 +50,11 @@ class UserService(
 
     suspend fun updateUser(
         userId: String,
-        profileImageUrl: String,
+        profileImageUrl: String?,
+        bannerUrl: String?,
         updateProfileRequest: UpdateProfileRequest
     ): Boolean {
-        return userRepository.updateUser(userId, profileImageUrl, updateProfileRequest)
+        return userRepository.updateUser(userId, profileImageUrl, bannerUrl, updateProfileRequest)
     }
 
     suspend fun searchForUsers(query: String, userId: String): List<UserResponseItem> {
@@ -62,6 +63,7 @@ class UserService(
         return users.map { user ->
             val isFollowing = followsByUser.find { it.followedUserId == user.id } != null
             UserResponseItem(
+                userId = user.id,
                 username = user.username,
                 profilePictureUrl = user.profileImageUrl,
                 bio = user.bio,
@@ -84,6 +86,7 @@ class UserService(
                 username = request.username,
                 password = request.password,
                 profileImageUrl = "",
+                bannerUrl = "",
                 bio = "",
                 gitHubUrl = null,
                 instagramUrl = null,

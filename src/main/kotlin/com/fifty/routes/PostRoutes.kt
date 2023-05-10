@@ -53,7 +53,8 @@ fun Route.createPost(
                 }
             }
 
-            val postPictureUrl = "${Constants.BASE_URL}post_pictures/$fileName"
+//            val postPictureUrl = "${Constants.BASE_URL}post_pictures/$fileName"
+            val postPictureUrl = "post_pictures/$fileName"
 
             createPostRequest?.let { request ->
                 val createPostAcknowledged = postService.createPost(
@@ -69,7 +70,7 @@ fun Route.createPost(
                         )
                     )
                 } else {
-                    File("${Constants.POST_PICTURE_PATH}/$fileName").deleteOnExit()
+                    File("${Constants.POST_PICTURE_PATH}/$fileName").delete()
                     call.respond(HttpStatusCode.InternalServerError)
                 }
             } ?: kotlin.run {
