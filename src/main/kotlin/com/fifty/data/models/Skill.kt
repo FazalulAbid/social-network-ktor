@@ -10,7 +10,7 @@ data class Skill(
     val name: String,
     val imageUrl: String
 ) {
-    fun toSkillResponse(): SkillDto {
+    fun toSkillDto(): SkillDto {
         return SkillDto(
             name = name,
             imageUrl = imageUrl

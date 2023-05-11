@@ -1,6 +1,5 @@
 package com.fifty.data.requests
 
-import com.fifty.data.models.Skill
 import com.fifty.data.responses.SkillDto
 
 data class UpdateProfileRequest(
