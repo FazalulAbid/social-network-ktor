@@ -23,7 +23,7 @@ class ActivityRepositoryImpl(
             .limit(pageSize)
             .descendingSort(Activity::timestamp)
             .toList()
-    }
+    } 
 
     override suspend fun createActivity(activity: Activity) {
         activities.insertOne(activity)

@@ -69,7 +69,7 @@ class UserService(
                 bio = user.bio,
                 isFollowing = isFollowing
             )
-        }
+        }.filter { it.userId != userId }
     }
 
     suspend fun doesPasswordMatchForUser(request: LoginRequest): Boolean {

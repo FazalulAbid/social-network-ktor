@@ -7,6 +7,7 @@ import com.fifty.data.util.ActivityType
 import com.fifty.service.ActivityService
 import com.fifty.service.FollowService
 import com.fifty.util.ApiResponseMessages.USER_NOT_FOUND
+import com.fifty.util.QueryParams
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -58,13 +59,12 @@ fun Route.followUser(
 fun Route.unfollowUser(followService: FollowService) {
     authenticate {
         delete("/api/following/unfollow") {
-            val request =
-                kotlin.runCatching { call.receiveNullable<FollowUpdateRequest>() }.getOrNull() ?: kotlin.run {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@delete
-                }
+            val userId = call.parameters[QueryParams.PARAM_USER_ID] ?: kotlin.run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@delete
+            }
 
-            if (followService.unfollowUserIfExists(request, call.userId)) {
+            if (followService.unfollowUserIfExists(followedUserId = userId, call.userId)) {
                 call.respond(
                     HttpStatusCode.OK,
                     BasicApiResponse<Unit>(
