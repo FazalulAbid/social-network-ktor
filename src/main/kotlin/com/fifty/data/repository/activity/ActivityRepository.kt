@@ -1,6 +1,7 @@
 package com.fifty.data.repository.activity
 
 import com.fifty.data.models.Activity
+import com.fifty.data.responses.ActivityResponse
 import com.fifty.util.Constants
 
 interface ActivityRepository {
@@ -9,7 +10,7 @@ interface ActivityRepository {
         userId: String,
         page: Int = 0,
         pageSize: Int = Constants.DEFAULT_POST_PAGE_SIZE
-    ): List<Activity>
+    ): List<ActivityResponse>
 
     suspend fun createActivity(activity: Activity)
 
