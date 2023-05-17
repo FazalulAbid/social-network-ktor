@@ -1,8 +1,10 @@
 package com.fifty.service
 
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.StringIdGenerator
 import com.fifty.data.models.Post
 import com.fifty.data.repository.post.PostRepository
 import com.fifty.data.requests.CreatePostRequest
+import com.fifty.data.responses.PostResponse
 import com.fifty.util.Constants
 
 class PostService(
@@ -36,7 +38,13 @@ class PostService(
         return repository.getPostsForProfile(userId, page, pageSize)
     }
 
-    suspend fun getPost(postId: String): Post? = repository.getPost(postId)
+    suspend fun getPost(postId: String): Post? {
+        return repository.getPost(postId)
+    }
+
+    suspend fun getPostDetails(ownUserId: String, postId: String): PostResponse? {
+        return repository.getPostDetails(ownUserId, postId)
+    }
 
     suspend fun deletePost(postId: String) {
         repository.deletePost(postId)
