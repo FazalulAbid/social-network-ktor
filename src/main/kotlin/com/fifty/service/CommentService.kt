@@ -2,12 +2,14 @@ package com.fifty.service
 
 import com.fifty.data.models.Comment
 import com.fifty.data.repository.comment.CommentRepository
+import com.fifty.data.repository.user.UserRepository
 import com.fifty.data.requests.CreateCommentRequest
+import com.fifty.data.responses.CommentResponse
 import com.fifty.util.Constants
-import com.mongodb.MongoSocketReadTimeoutException
 
 class CommentService(
-    private val repository: CommentRepository
+    private val commentRepository: CommentRepository,
+    private val userRepository: UserRepository
 ) {
 
     suspend fun createComment(createCommentRequest: CreateCommentRequest, userId: String): ValidationEvent {
@@ -20,8 +22,12 @@ class CommentService(
             }
         }
 
-        repository.createComment(
+        val user = userRepository.getUserById(userId) ?: return ValidationEvent.UserNotFound
+        commentRepository.createComment(
             Comment(
+                username = user.username,
+                profileImageUrl = user.profileImageUrl,
+                likeCount = 0,
                 comment = createCommentRequest.comment,
                 userId = userId,
                 postId = createCommentRequest.postId,
@@ -32,24 +38,25 @@ class CommentService(
     }
 
     suspend fun deleteComment(commentId: String): Boolean {
-        return repository.deleteComment(commentId)
+        return commentRepository.deleteComment(commentId)
     }
 
-    suspend fun getCommentsForPost(postId: String): List<Comment> {
-        return repository.getCommentsForPost(postId)
+    suspend fun getCommentsForPost(postId: String, ownUserId: String): List<CommentResponse> {
+        return commentRepository.getCommentsForPost(postId, ownUserId)
     }
 
     suspend fun getCommentById(commentId: String): Comment? {
-        return repository.getComment(commentId)
+        return commentRepository.getComment(commentId)
     }
 
     suspend fun deleteCommentsForPost(postId: String) {
-        repository.deleteComment(postId)
+        commentRepository.deleteComment(postId)
     }
 
     sealed class ValidationEvent {
         object ErrorFieldEmpty : ValidationEvent()
         object ErrorCommentTooLong : ValidationEvent()
+        object UserNotFound : ValidationEvent()
         object Success : ValidationEvent()
     }
 }
