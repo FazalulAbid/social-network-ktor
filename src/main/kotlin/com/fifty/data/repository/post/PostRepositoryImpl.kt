@@ -28,19 +28,12 @@ class PostRepositoryImpl(
     }
 
     override suspend fun getPostByFollows(
-        userId: String,
+        ownUserId: String,
         page: Int,
         pageSize: Int
-    ): List<Post> {
-//        val userIdsFromFollows = users.find(
-//            User::id eq userId
-//        )
-//            .toList()
-//            .map {
-//                it.id
-//            }
+    ): List<PostResponse> {
         val userIdsFromFollows = following.find(
-            Following::followedUserId eq userId
+            Following::followedUserId eq ownUserId
         )
             .toList()
             .map {
@@ -51,6 +44,26 @@ class PostRepositoryImpl(
             .limit(pageSize)
             .descendingSort(Post::timestamp)
             .toList()
+            .map { post ->
+                val isLiked = likes.findOne(
+                    and(
+                        Like::parentId eq post.id,
+                        Like::userId eq ownUserId
+                    )
+                ) != null
+                val user = users.findOneById(post.userId)
+                PostResponse(
+                    id = post.id,
+                    userId = ownUserId,
+                    username = user?.username ?: "",
+                    imageUrl = post.imageUrl,
+                    profilePictureUrl = user?.profileImageUrl ?: "",
+                    description = post.description,
+                    likeCount = post.likeCount,
+                    commentCount = post.commentCount,
+                    isLiked = isLiked
+                )
+            }
     }
 
     override suspend fun getPostsForProfile(
