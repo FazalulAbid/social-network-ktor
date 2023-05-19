@@ -8,6 +8,7 @@ import com.fifty.data.requests.LoginRequest
 import com.fifty.data.requests.UpdateProfileRequest
 import com.fifty.data.responses.ProfileResponse
 import com.fifty.data.responses.UserResponseItem
+import com.fifty.util.Constants
 
 class UserService(
     private val userRepository: UserRepository,
@@ -85,8 +86,8 @@ class UserService(
                 email = request.email,
                 username = request.username,
                 password = request.password,
-                profileImageUrl = "",
-                bannerUrl = "",
+                profileImageUrl = Constants.DEFAULT_PROFILE_PICTURE_PATH,
+                bannerUrl = Constants.DEFAULT_BANNER_IMAGE_PATH,
                 bio = "",
                 gitHubUrl = null,
                 instagramUrl = null,
