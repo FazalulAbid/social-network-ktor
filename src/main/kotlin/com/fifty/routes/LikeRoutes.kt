@@ -21,16 +21,14 @@ fun Route.likeParent(
 ) {
     authenticate {
         post("/api/like") {
-            val request = kotlin.runCatching { call.receiveNullable<LikeUpdateRequest>() }.getOrNull() ?: kotlin.run {
-                call.respond(
-                    HttpStatusCode.BadRequest
-                )
+            val request = call.receiveOrNull<LikeUpdateRequest>() ?: kotlin.run {
+                call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
 
             val userId = call.userId
-            val likeSuccessful = likeService.likeParent(call.userId, request.parentId, request.parentType)
-            if (likeSuccessful) {
+            val likeSuccessful = likeService.likeParent(userId, request.parentId, request.parentType)
+            if(likeSuccessful) {
                 activityService.addLikeActivity(
                     byUserId = userId,
                     parentType = ParentType.fromType(request.parentType),
@@ -57,7 +55,6 @@ fun Route.likeParent(
 
 fun Route.unlikeParent(
     likeService: LikeService,
-    userService: UserService
 ) {
     authenticate {
         delete("/api/unlike") {
@@ -70,7 +67,7 @@ fun Route.unlikeParent(
                 return@delete
             }
             val unlikeSuccessful = likeService.unlikeParent(call.userId, parentId, parentType)
-            if (unlikeSuccessful) {
+            if(unlikeSuccessful) {
                 call.respond(
                     HttpStatusCode.OK,
                     BasicApiResponse<Unit>(

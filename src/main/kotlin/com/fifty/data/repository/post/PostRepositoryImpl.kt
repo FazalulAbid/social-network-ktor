@@ -5,6 +5,7 @@ import com.fifty.data.models.Like
 import com.fifty.data.models.Post
 import com.fifty.data.models.User
 import com.fifty.data.responses.PostResponse
+import org.litote.kmongo.and
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq
 import org.litote.kmongo.`in`
@@ -53,15 +54,36 @@ class PostRepositoryImpl(
     }
 
     override suspend fun getPostsForProfile(
+        ownUserId: String,
         userId: String,
         page: Int,
         pageSize: Int
-    ): List<Post> {
-        return posts.find(Post::userId `in` userId)
+    ): List<PostResponse> {
+        val user = users.findOneById(userId) ?: return emptyList()
+        return posts.find(Post::userId eq userId)
             .skip(page * pageSize)
             .limit(pageSize)
             .descendingSort(Post::timestamp)
             .toList()
+            .map { post ->
+                val isLiked = likes.findOne(
+                    and(
+                        Like::parentId eq post.id,
+                        Like::userId eq ownUserId
+                    )
+                ) != null
+                PostResponse(
+                    id = post.id,
+                    userId = userId,
+                    username = user.username,
+                    imageUrl = post.imageUrl,
+                    profilePictureUrl = user.profileImageUrl,
+                    description = post.description,
+                    likeCount = post.likeCount,
+                    commentCount = post.commentCount,
+                    isLiked = isLiked
+                )
+            }
     }
 
     override suspend fun getPost(postId: String): Post? {
@@ -69,7 +91,7 @@ class PostRepositoryImpl(
     }
 
     override suspend fun getPostDetails(userId: String, postId: String): PostResponse? {
-        val isLiked = likes.findOneById(Like::userId eq userId) != null
+        val isLiked = likes.findOne(Like::userId eq userId) != null
         val post = posts.findOneById(postId) ?: return null
         val user = users.findOneById(userId) ?: return null
         return PostResponse(

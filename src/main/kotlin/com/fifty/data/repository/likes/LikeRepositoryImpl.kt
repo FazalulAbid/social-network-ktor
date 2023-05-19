@@ -78,7 +78,7 @@ class LikeRepositoryImpl(
         }
     }
 
-    override suspend fun deleteLikeForParent(parentId: String) {
+    override suspend fun deleteLikesForParent(parentId: String) {
         likes.deleteMany(Like::parentId eq parentId)
     }
 

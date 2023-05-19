@@ -20,7 +20,7 @@ class LikeService(
     }
 
     suspend fun deleteLikesForParent(parentId: String) {
-        likeRepository.deleteLikeForParent(parentId)
+        likeRepository.deleteLikesForParent(parentId)
     }
 
     suspend fun getUsersWhoLikedForParent(parentId: String, userId: String): List<UserResponseItem> {
