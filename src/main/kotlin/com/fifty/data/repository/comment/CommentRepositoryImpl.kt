@@ -2,20 +2,25 @@ package com.fifty.data.repository.comment
 
 import com.fifty.data.models.Comment
 import com.fifty.data.models.Like
+import com.fifty.data.models.Post
 import com.fifty.data.responses.CommentResponse
 import org.litote.kmongo.and
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq
+import org.litote.kmongo.setValue
 
 class CommentRepositoryImpl(
     db: CoroutineDatabase
 ) : CommentRepository {
 
+    private val posts = db.getCollection<Post>()
     private val comments = db.getCollection<Comment>()
     private val likes = db.getCollection<Like>()
 
     override suspend fun createComment(comment: Comment): String {
         comments.insertOne(comment)
+        val oldCommentCount = posts.findOneById(comment.postId)?.commentCount ?: 0
+        posts.updateOneById(comment.postId, setValue(Post::commentCount, oldCommentCount + 1))
         return comment.id
     }
 

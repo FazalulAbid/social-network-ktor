@@ -78,15 +78,13 @@ fun Route.createComment(
 fun Route.getCommentsForPost(
     commentService: CommentService
 ) {
-    authenticate {
-        get("/api/comment/get") {
-            val postId = call.parameters[QueryParams.PARAM_POST_ID] ?: kotlin.run {
-                call.respond(HttpStatusCode.BadRequest)
-                return@get
-            }
-            val comments = commentService.getCommentsForPost(postId, call.userId)
-            call.respond(HttpStatusCode.OK, comments)
+    get("/api/comment/get") {
+        val postId = call.parameters[QueryParams.PARAM_POST_ID] ?: kotlin.run {
+            call.respond(HttpStatusCode.BadRequest)
+            return@get
         }
+        val comments = commentService.getCommentsForPost(postId, call.userId)
+        call.respond(HttpStatusCode.OK, comments)
     }
 }
 
