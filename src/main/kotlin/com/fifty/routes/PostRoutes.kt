@@ -6,8 +6,6 @@ import com.fifty.data.responses.BasicApiResponse
 import com.fifty.service.CommentService
 import com.fifty.service.LikeService
 import com.fifty.service.PostService
-import com.fifty.service.UserService
-import com.fifty.util.ApiResponseMessages
 import com.fifty.util.Constants
 import com.fifty.util.QueryParams
 import com.fifty.util.save
@@ -21,7 +19,6 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import java.io.File
-import java.util.*
 
 fun Route.createPost(
     postService: PostService
@@ -89,7 +86,7 @@ fun Route.getPostsForProfile(
             val userId = call.parameters[QueryParams.PARAM_USER_ID]
             val page = call.parameters[QueryParams.PARAM_PAGE]?.toIntOrNull() ?: 0
             val pageSize =
-                call.parameters[QueryParams.PARAM_PAGE_SIZE]?.toIntOrNull() ?: Constants.DEFAULT_POST_PAGE_SIZE
+                call.parameters[QueryParams.PARAM_PAGE_SIZE]?.toIntOrNull() ?: Constants.DEFAULT_PAGE_SIZE
 
             val posts = postService.getPostsForProfile(
                 ownUserId = call.userId,
@@ -112,7 +109,7 @@ fun Route.getPostsForFollows(
         get("/api/post/get") {
             val page = call.parameters[QueryParams.PARAM_PAGE]?.toIntOrNull() ?: 0
             val pageSize =
-                call.parameters[QueryParams.PARAM_PAGE_SIZE]?.toIntOrNull() ?: Constants.DEFAULT_POST_PAGE_SIZE
+                call.parameters[QueryParams.PARAM_PAGE_SIZE]?.toIntOrNull() ?: Constants.DEFAULT_PAGE_SIZE
 
             val posts = postService.getPostsForFollows(
                 call.userId, page, pageSize

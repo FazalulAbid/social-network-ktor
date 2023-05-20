@@ -3,6 +3,8 @@ package com.fifty.di
 import com.fifty.data.models.Skill
 import com.fifty.data.repository.activity.ActivityRepository
 import com.fifty.data.repository.activity.ActivityRepositoryImpl
+import com.fifty.data.repository.chat.ChatRepository
+import com.fifty.data.repository.chat.ChatRepositoryImpl
 import com.fifty.data.repository.comment.CommentRepository
 import com.fifty.data.repository.comment.CommentRepositoryImpl
 import com.fifty.data.repository.follow.FollowRepository
@@ -51,6 +53,9 @@ val mainModule = module {
     single<SkillRepository> {
         SkillRepositoryImpl(get())
     }
+    single<ChatRepository> {
+        ChatRepositoryImpl(get())
+    }
     single { UserService(get(), get()) }
     single { FollowService(get()) }
     single { PostService(get()) }
@@ -58,6 +63,7 @@ val mainModule = module {
     single { CommentService(get(), get()) }
     single { ActivityService(get(), get(), get()) }
     single { SkillService(get()) }
+    single { ChatService(get()) }
 
     single { Gson() }
 }

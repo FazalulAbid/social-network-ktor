@@ -1,6 +1,5 @@
 package com.fifty.service
 
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.StringIdGenerator
 import com.fifty.data.models.Post
 import com.fifty.data.repository.post.PostRepository
 import com.fifty.data.requests.CreatePostRequest
@@ -25,7 +24,7 @@ class PostService(
     suspend fun getPostsForFollows(
         ownUserId: String,
         page: Int = 0,
-        pageSize: Int = Constants.DEFAULT_POST_PAGE_SIZE
+        pageSize: Int = Constants.DEFAULT_PAGE_SIZE
     ): List<PostResponse> {
         return repository.getPostByFollows(ownUserId, page, pageSize)
     }
@@ -34,7 +33,7 @@ class PostService(
         ownUserId: String,
         userId: String,
         page: Int = 0,
-        pageSize: Int = Constants.DEFAULT_POST_PAGE_SIZE
+        pageSize: Int = Constants.DEFAULT_PAGE_SIZE
     ): List<PostResponse> {
         return repository.getPostsForProfile(ownUserId, userId, page, pageSize)
     }

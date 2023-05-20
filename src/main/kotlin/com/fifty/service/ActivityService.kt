@@ -18,7 +18,7 @@ class ActivityService(
     suspend fun getActivitiesForUser(
         userId: String,
         page: Int = 0,
-        pageSize: Int = Constants.DEFAULT_POST_PAGE_SIZE
+        pageSize: Int = Constants.DEFAULT_PAGE_SIZE
     ): List<ActivityResponse> {
         return activityRepository.getActivitiesForUser(userId, page, pageSize)
     }
