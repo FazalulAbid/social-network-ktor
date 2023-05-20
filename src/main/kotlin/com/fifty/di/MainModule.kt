@@ -1,6 +1,5 @@
 package com.fifty.di
 
-import com.fifty.data.models.Skill
 import com.fifty.data.repository.activity.ActivityRepository
 import com.fifty.data.repository.activity.ActivityRepositoryImpl
 import com.fifty.data.repository.chat.ChatRepository
@@ -18,10 +17,10 @@ import com.fifty.data.repository.skill.SkillRepositoryImpl
 import com.fifty.data.repository.user.UserRepository
 import com.fifty.data.repository.user.UserRepositoryImpl
 import com.fifty.service.*
+import com.fifty.service.chat.ChatController
+import com.fifty.service.chat.ChatService
 import com.fifty.util.Constants
 import com.google.gson.Gson
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
@@ -66,5 +65,7 @@ val mainModule = module {
     single { ChatService(get()) }
 
     single { Gson() }
+
+    single { ChatController(get()) }
 }
 

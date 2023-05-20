@@ -1,14 +1,16 @@
 package com.fifty.plugins
 
-import com.fifty.data.models.Skill
 import com.fifty.routes.*
 import com.fifty.service.*
+import com.fifty.service.chat.ChatController
+import com.fifty.service.chat.ChatService
+import com.fifty.service.chat.ChatSession
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.sessions.*
 import org.koin.ktor.ext.inject
-import java.io.File
 
 fun Application.configureRouting() {
     val userService: UserService by inject()
@@ -19,6 +21,7 @@ fun Application.configureRouting() {
     val activityService: ActivityService by inject()
     val skillService: SkillService by inject()
     val chatService: ChatService by inject()
+    val chatController: ChatController by inject()
 
     val jwtIssuer = environment.config.property("jwt.domain").getString()
     val jwtAudience = environment.config.property("jwt.audience").getString()
@@ -71,7 +74,7 @@ fun Application.configureRouting() {
         //Chat routes
         getChatsForUser(chatService = chatService)
         getMessagesForChat(chatService = chatService)
-        chatWebSocket(chatService = chatService)
+        chatWebSocket(chatController = chatController)
 
         static {
             resources("static")

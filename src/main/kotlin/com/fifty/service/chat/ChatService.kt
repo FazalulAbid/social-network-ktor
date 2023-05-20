@@ -1,4 +1,4 @@
-package com.fifty.service
+package com.fifty.service.chat
 
 import com.fifty.data.models.Chat
 import com.fifty.data.models.Message
