@@ -17,7 +17,7 @@ class ChatRepositoryImpl(
 
     override suspend fun getMessagesForChat(chatId: String, page: Int, pageSize: Int): List<Message> {
         return messages.find(Message::chatId eq chatId).skip(page * pageSize).limit(pageSize)
-            .descendingSort(Message::timestamp).toList()
+            .ascendingSort(Message::timestamp).toList()
     }
 
     override suspend fun getChatsForUser(ownUserId: String): List<ChatDto> {

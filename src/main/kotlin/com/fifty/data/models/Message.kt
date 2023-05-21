@@ -11,6 +11,4 @@ data class Message(
     val chatId: String?,
     @BsonId
     val id: String = ObjectId().toString()
-) {
-
-}
+)
