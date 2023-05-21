@@ -1,10 +1,7 @@
 package com.fifty.service.chat
 
-import com.fifty.data.models.Chat
-import com.fifty.data.models.Message
-import com.fifty.data.models.SimpleUser
 import com.fifty.data.repository.chat.ChatRepository
-import com.fifty.websocket.WsMessage
+import com.fifty.data.websocket.WsServerMessage
 import io.ktor.websocket.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -24,9 +21,9 @@ class ChatController(
         }
     }
 
-    suspend fun sendMessage(json: String, message: WsMessage) {
-        onlineUsers[message.fromId]?.send(Frame.Text(json))
-        onlineUsers[message.toId]?.send(Frame.Text(json))
+    suspend fun sendMessage(frameText: String, message: WsServerMessage) {
+        onlineUsers[message.fromId]?.send(Frame.Text(frameText))
+        onlineUsers[message.toId]?.send(Frame.Text(frameText))
         val messageEntity = message.toMessage()
         repository.insertMessage(messageEntity)
         if (!repository.doesChatByUsersExist(message.fromId, message.toId)) {

@@ -2,8 +2,8 @@ package com.fifty.data.repository.chat
 
 import com.fifty.data.models.Chat
 import com.fifty.data.models.Message
-import com.fifty.data.models.SimpleUser
 import com.fifty.data.models.User
+import com.fifty.data.responses.ChatDto
 import org.litote.kmongo.*
 import org.litote.kmongo.coroutine.CoroutineDatabase
 
@@ -20,8 +20,22 @@ class ChatRepositoryImpl(
             .descendingSort(Message::timestamp).toList()
     }
 
-    override suspend fun getChatsForUser(ownUserId: String): List<Chat> {
-        return chats.find(Chat::userIds contains ownUserId).descendingSort(Chat::timestamp).toList()
+    override suspend fun getChatsForUser(ownUserId: String): List<ChatDto> {
+        return chats.find(Chat::userIds contains ownUserId)
+            .descendingSort(Chat::timestamp).toList()
+            .map { chat ->
+                val otherUserId = chat.userIds.find { it != ownUserId }
+                val user = users.findOneById(otherUserId ?: "")
+                val message = messages.findOneById(chat.lastMessageId)
+                ChatDto(
+                    chatId = chat.id,
+                    remoteUserId = user?.id,
+                    remoteUsername = user?.username,
+                    remoteUserProfilePictureUrl = user?.profileImageUrl,
+                    lastMessage = message?.text,
+                    timestamp = message?.timestamp
+                )
+            }
     }
 
     override suspend fun doesChatBelongToUser(chatId: String, userId: String): Boolean {

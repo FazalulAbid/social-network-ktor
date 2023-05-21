@@ -3,6 +3,7 @@ package com.fifty.service.chat
 import com.fifty.data.models.Chat
 import com.fifty.data.models.Message
 import com.fifty.data.repository.chat.ChatRepository
+import com.fifty.data.responses.ChatDto
 
 class ChatService(
     private val chatRepository: ChatRepository
@@ -16,7 +17,7 @@ class ChatService(
         return chatRepository.getMessagesForChat(chatId, page, pageSize)
     }
 
-    suspend fun getChatForUser(ownUserId: String): List<Chat> {
+    suspend fun getChatForUser(ownUserId: String): List<ChatDto> {
         return chatRepository.getChatsForUser(ownUserId)
     }
 }
