@@ -34,10 +34,7 @@ fun Route.getMessagesForChat(chatService: ChatService) {
             }
 
             val messages = chatService.getMessagesForChat(chatId, page, pageSize)
-            call.respond(
-                HttpStatusCode.OK,
-                messages
-            )
+            call.respond(HttpStatusCode.OK, messages)
         }
     }
 }
@@ -45,7 +42,8 @@ fun Route.getMessagesForChat(chatService: ChatService) {
 fun Route.getChatsForUser(chatService: ChatService) {
     authenticate {
         get("/api/chats") {
-            val chats = chatService.getChatForUser(call.userId)
+            val chats = chatService.getChatsForUser(call.userId)
+            print("RespondChatDto $chats")
             call.respond(HttpStatusCode.OK, chats)
         }
     }
@@ -56,17 +54,24 @@ fun Route.chatWebSocket(chatController: ChatController) {
         webSocket("/api/chat/websocket") {
             chatController.onJoin(call.userId, this)
             try {
+                print("Worked")
                 incoming.consumeEach { frame ->
+                    print("Worked inside ")
                     kotlin.run {
+                        print("Worked inside 2 ")
                         when (frame) {
                             is Frame.Text -> {
                                 val frameText = frame.readText()
                                 val delimiterIndex = frameText.indexOf("#")
                                 if (delimiterIndex == -1) {
+                                    println("No delimiter found")
                                     return@run
                                 }
-                                val type =
-                                    frame.readText().substring(0, delimiterIndex).toIntOrNull() ?: return@run
+                                val type = frameText.substring(0, delimiterIndex).toIntOrNull()
+                                if (type == null) {
+                                    println("Invalid format")
+                                    return@run
+                                }
                                 val json = frameText.substring(delimiterIndex + 1, frameText.length)
                                 handleWebSocket(call.userId, chatController, type, frameText, json)
                             }
@@ -76,8 +81,10 @@ fun Route.chatWebSocket(chatController: ChatController) {
                     }
                 }
             } catch (e: Exception) {
+                print("This is it ${e.message}")
                 e.printStackTrace()
             } finally {
+                println("Disconnecting ${call.userId}")
                 chatController.onDisconnect(call.userId)
             }
         }
@@ -91,7 +98,7 @@ suspend fun handleWebSocket(
     frameText: String,
     json: String
 ) {
-    val gson: Gson by inject(Gson::class.java)
+    val gson by inject<Gson>(Gson::class.java)
     when (type) {
         WebSocketObject.MESSAGE.ordinal -> {
             val message = gson.fromJsonOrNull(json, WsClientMessage::class.java) ?: return
